@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+  build:
+    commands:
+      # - pip install -r requirements.txt
+      # - cd tests
+  post_build:
+    commands:
+      # - cd ..
+artifacts:
+  files:
+    - config_deploy/buildspec.deploy.yml
+    - lmds/**/*

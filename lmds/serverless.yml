@@ -1,0 +1,55 @@
+service: storitest
+app: stori-apps
+frameworkVersion: '2'
+
+
+provider:
+  name: aws
+  #runtime: python3.8
+  lambdaHashingVersion: 20201221
+  versionFunctions: ${self:custom.versionFunctions}
+  tags:
+    servicio: test_stori
+    proyecto: stori
+  stage: ${opt:stage, 'dev'}
+  region: ${self:custom.region}
+  deploymentBucket:
+    name: ${self:custom.bucketDeploy}
+    tags:
+      Proceso: CI/CD
+      Data: data-stori # Etiqueta que se usa para el ciclo de vida de los datos generados para el deploy.
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
+
+custom: ${file(config_deploy/config.${self:provider.stage}.yml)}
+
+functions:
+  stori:
+    handler: handler.start
+    name: ${self:provider.stage}-LMD_stori_idempotency
+    description: Idempotency lambda
+    runtime: python3.7
+    memorySize: 128
+    timeout: 300    
+    vpc: ${self:custom.vpc} #checar
+    environment: ${self:custom.environment}
+    package:
+      exclude:
+        - config_deploy/**
+        - .serverless/**
+        - requirements.txt
+        - event.json
+        - serverless.yml
+        - README.md
+        - node_modules/**
+        - package-lock.json
+        - package.json
+plugins:
+  - serverless-python-requirements
