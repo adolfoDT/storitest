@@ -16,3 +16,6 @@ phases:
   build:
     commands:
       - serverless deploy --stage $ENVIRONMENT -v
+artifacts:
+  files:
+    - lmds/**/*
