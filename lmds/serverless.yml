@@ -37,8 +37,30 @@ custom: ${file(config_deploy/config.${self:provider.stage}.yml)}
 
 functions:
   stori:
-    handler: handler.start
+    handler: idempotency/handler.start
     name: ${self:provider.stage}-LMD_stori_idempotency
+    description: Idempotency lambda
+    runtime: python3.7
+    # events:
+    #   - s3: ${self:custom.TRG_BUCKET}
+    memorySize: 128
+    timeout: 300    
+    #vpc: ${self:custom.vpc} #checar
+    environment: ${self:custom.environment}
+    package:
+      patterns:
+        - '!config_deploy/**'
+        - '!.serverless/**'
+        - '!requirements.txt'
+        - '!event.json'
+        - '!serverless.yml'
+        - '!README.md'
+        - '!node_modules/**'
+        - '!package-lock.json'
+        - '!package.json'
+  s3invoke:
+    handler: process_file/invokeS3.start
+    name: ${self:provider.stage}-LMD_invokeS3
     description: Idempotency lambda
     runtime: python3.7
     events:
