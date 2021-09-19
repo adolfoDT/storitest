@@ -10,10 +10,10 @@ persistence_layer = DynamoDBPersistenceLayer(table_name="IdempotencyTable")
 
 # Treat everything under the "body" key
 # in the event json object as our payload
-config = IdempotencyConfig(event_key_jmespath="body")
+#config = IdempotencyConfig(event_key_jmespath="body")
 
 @logger.inject_lambda_context
-@idempotent(config=config, persistence_store=persistence_layer)
+@idempotent( persistence_store=persistence_layer)
 def start(event, context):
     try :
         logger.info("Starting the event...")
