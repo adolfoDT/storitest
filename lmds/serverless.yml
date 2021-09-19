@@ -36,6 +36,8 @@ functions:
     name: ${self:provider.stage}-LMD_stori_idempotency
     description: Idempotency lambda
     runtime: python3.7
+    events:
+      - s3: ${self:custom.TRG_BUCKET}
     memorySize: 128
     timeout: 300    
     #vpc: ${self:custom.vpc} #checar

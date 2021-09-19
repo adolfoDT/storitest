@@ -6,3 +6,8 @@ environment:
   SQL_HOST: ltdata.cj7i5sksfdfm.us-east-2.rds.amazonaws.com
   SQL_USER: lt
   SQL_PASSWORD: poropo1994
+
+TRG_BUCKET:
+
+  bucket: storidata
+  event: s3:ObjectCreated:*
