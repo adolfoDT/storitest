@@ -7,7 +7,6 @@ provider:
   name: aws
   #runtime: python3.8
   lambdaHashingVersion: 20201221
-  versionFunctions: ${self:custom.versionFunctions}
   tags:
     servicio: test_stori
     proyecto: stori
@@ -18,15 +17,21 @@ provider:
     tags:
       Proceso: CI/CD
       Data: data-stori # Etiqueta que se usa para el ciclo de vida de los datos generados para el deploy.
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - lambda:InvokeFunction
-      Resource: "*"
-    - Effect: Allow
-      Action:
-        - s3:*
-      Resource: "*"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:*
+          Resource: "*"
+        - Effect: "Allow"
+          Action:
+            - "ses:*"
+          Resource: "*"
 
 custom: ${file(config_deploy/config.${self:provider.stage}.yml)}
 
@@ -43,15 +48,15 @@ functions:
     #vpc: ${self:custom.vpc} #checar
     environment: ${self:custom.environment}
     package:
-      exclude:
-        - config_deploy/**
-        - .serverless/**
-        - requirements.txt
-        - event.json
-        - serverless.yml
-        - README.md
-        - node_modules/**
-        - package-lock.json
-        - package.json
+      patterns:
+        - '!config_deploy/**'
+        - '!.serverless/**'
+        - '!requirements.txt'
+        - '!event.json'
+        - '!serverless.yml'
+        - '!README.md'
+        - '!node_modules/**'
+        - '!package-lock.json'
+        - '!package.json'
 plugins:
   - serverless-python-requirements
