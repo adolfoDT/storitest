@@ -11,3 +11,4 @@ TRG_BUCKET:
 
   bucket: storidata
   event: s3:ObjectCreated:*
+  existing: true
