@@ -38,7 +38,7 @@ functions:
     runtime: python3.7
     memorySize: 128
     timeout: 300    
-    vpc: ${self:custom.vpc} #checar
+    #vpc: ${self:custom.vpc} #checar
     environment: ${self:custom.environment}
     package:
       exclude:
