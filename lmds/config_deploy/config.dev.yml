@@ -6,6 +6,8 @@ environment:
   SQL_HOST: ltdata.cj7i5sksfdfm.us-east-2.rds.amazonaws.com
   SQL_USER: lt
   SQL_PASSWORD: poropo1994
+  BUCKET_NAME: storidata
+  ARN_STORI: arn:aws:lambda:us-east-2:075313463539:function:dev-LMD_stori_idempotency
 
 TRG_BUCKET:
 

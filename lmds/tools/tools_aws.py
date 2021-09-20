@@ -5,6 +5,11 @@ import os
 import json
 import logging
 import boto3
+import csv
+from io import StringIO
+import pandas as pd
+from aws_lambda_powertools import Logger
+logger = Logger(service="tools_aws")
 
 __author__ = 'Adolfo Diaz Taracena'
 __version__ = '1.0'
@@ -35,7 +40,8 @@ def call_lambda(arn, event, type_invoke='Event',
         Anything that return the lambda function.
     """
     try:
-        print('Try create client lambda.')
+        logger.info('Try create client lambda')
+        
         if aws_access_key_id and aws_secret_access_key and region_name:
             client = boto3.client('lambda',
                                   aws_access_key_id=aws_access_key_id,
@@ -48,75 +54,44 @@ def call_lambda(arn, event, type_invoke='Event',
         else:
             client = boto3.client('lambda')
     except Exception as details:
-        print('Error to try make client(\'lambda\')\n'
+        logger.error('Error to try make client(\'lambda\')\n'
                        'Details: {}'.format(details))
         return None
     # noinspection PyBroadException
     try:
-        print(event)
-        print("intentando.....")
-        print("s3INVOKEEE")
+  
         payload = json.dumps(event)
-        print("datetime")
-        print(payload)
+        logger.info("Invoking lambda function: {}".format(payload))
         result = client.invoke(FunctionName=arn,
                                InvocationType=type_invoke,
                                Payload=payload)
-        print("datetime")
+        
         
 
     except Exception as details:
-        print(f'Error to try invoke the lambda function.\n'
+        logger.error(f'Error to try invoke the lambda function.\n'
                      f'Detalles: {details}')
         return None
-    print('Function call_lambda finish successful.')
+    logger.info('Function call_lambda finish successful.')
     return result['Payload'].read()
 
 
-def descarga_de_s3(bucket, nombre_archivo, carpeta_s3=None, path_save_file='/tmp/', nuevo_nombre=None,
-                   aws_access_key_id=None, aws_secret_access_key=None,
-                   region_name=None):
-    try:
-        print('Trying to create the instances for download the file.')
-        if aws_access_key_id and aws_secret_access_key and region_name:
-            s3 = boto3.resource('s3',
-                                aws_access_key_id=aws_access_key_id,
-                                aws_secret_access_key=aws_secret_access_key,
-                                region_name=region_name)
-        elif aws_access_key_id and aws_secret_access_key:
-            s3 = boto3.resource('s3',
-                                aws_access_key_id=aws_access_key_id,
-                                aws_secret_access_key=aws_secret_access_key)
-        else:
-            s3 = boto3.resource('s3')
+def download_s3(bucket, key):
+                  
+    try: 
+        logger.info('Trying to create the instances for download the s3 file')
+        s3_client = boto3.client('s3')
     except Exception as details:
-        print('Error to try connect to s3\nDetails: {}'.format(details))
-        return None
+        logger.error('Error went tried to connect to s3\nDetails: {}'.format(details))
 
-    if carpeta_s3 is None:
-        path_s3_file = nombre_archivo
-    else:
-        path_s3_file = f'{carpeta_s3}/{nombre_archivo}'
-
-    if nuevo_nombre is None:
-        path_save_file = os.path.join(path_save_file, nombre_archivo)
-    else:
-        path_save_file = os.path.join(path_save_file, nuevo_nombre)
     try:
-        s3.Bucket(bucket).download_file(path_s3_file, path_save_file)
+        logger.info('The file was obtained successfully')
+        response = s3_client.get_object(Bucket=bucket, Key=key)
+        # data =json.loads(response["Body"].read())
+        csv_string = response["Body"].read().decode("utf-8")
+        df = pd.read_csv(StringIO(csv_string))
+        logger.info('The file was obtained successfully')
+        return df
     except Exception as details:
-        print('Error while trying to download {} a {}\n'
-                       'Error details: {}'.format(path_s3_file, path_save_file, details))
-        raise ErrorDescargaS3(details)
-    else:
-        print('Successfull download.')
-        return s3.Object(bucket, path_s3_file).metadata
-
-class ErrorDescargaS3(Exception):
-    def __init__(self, message):
-        super(Exception, self).__init__(message)
-
-
-class ErrorCargaS3(Exception):
-    def __init__(self, message):
-        super(Exception, self).__init__(message)
+        logger.error('Error went tried to get file: {}'.format(details))
+    
