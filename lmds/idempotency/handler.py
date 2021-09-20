@@ -8,14 +8,16 @@ from aws_lambda_powertools import Logger
 
 logger = Logger(service="Storitest")
 
-persistence_layer = DynamoDBPersistenceLayer(table_name="IdempotencyTable")
+# persistence_layer = DynamoDBPersistenceLayer(table_name="IdempotencyTable")
 
-# Treat everything under the "body" key
-# in the event json object as our payload
-config = IdempotencyConfig(event_key_jmespath="body")
+# # Treat everything under the "body" key
+# # in the event json object as our payload
+# config = IdempotencyConfig(event_key_jmespath="body")
+# #TODO we need to save the information to the database on sql
+# #TODO send the notification too
 
-@logger.inject_lambda_context
-@idempotent(config=config, persistence_store=persistence_layer)
+# @logger.inject_lambda_context
+# @idempotent(config=config, persistence_store=persistence_layer)
 def start(event, context):
     try :
         logger.info("Starting the event...")
