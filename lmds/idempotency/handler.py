@@ -25,15 +25,17 @@ persistence_layer = DynamoDBPersistenceLayer(table_name="IdempotencyTable")
 def start(event, context):
     try:
         data_type = type(event)
+    
         logger.info("The event is : {}".format(event))
-        logger.info("The data type of the even: {}".format(data_type))
+        logger.info("The data type is: {}".format(str(data_type)))
+       
 
         body = json.loads(event['body'])
         payment = create_subscription_payment(
             user=body['user'],
             product=body['product_id']
         )
-        ...
+        
         return {
             "payment_id": payment.id,
             "message": "success",

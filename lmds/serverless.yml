@@ -32,6 +32,10 @@ provider:
           Action:
             - "ses:*"
           Resource: "*"
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:*"
+          Resource: "*"
 
 custom: ${file(config_deploy/config.${self:provider.stage}.yml)}
 
