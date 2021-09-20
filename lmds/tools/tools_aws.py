@@ -14,7 +14,6 @@ logger = Logger(service="tools_aws")
 __author__ = 'Adolfo Diaz Taracena'
 __version__ = '1.0'
 
-logger = logging.getLogger('tools_aws')
 
 
 def call_lambda(arn, event, type_invoke='Event',
