@@ -3,7 +3,6 @@
 
 import os
 import json
-import logging
 import boto3
 import csv
 from io import StringIO
@@ -93,4 +92,66 @@ def download_s3(bucket, key):
         return df
     except Exception as details:
         logger.error('Error went tried to get file: {}'.format(details))
+
+def send_email(total_balancer, number_transactions, debit, credit, complete_name):
+    logger.info("Sending email...")
+
+   
+    SENDER = "Storitest <diaz.taracenaAWS@gmail.com>"
+    AWS_REGION = "us-east-2"
+    SUBJECT = "Stori Account State of {}".format(complete_name)
+    CHARSET = "UTF-8"
+    emails = ["diaz.taracena94@gmail.com"]
+
+
+    list_paras =["<p>Numbers of transactions in "+ each_one["month"] + " " + each_one["total"] + "</p>" for each_one in number_transactions ]
+
+    paragraph = " ".join(list_paras)
+
+    BODY_HTML = """<p> Total balancer {total_balancer}</p> {paragraph}
+    <p>Average debit amount : {debit} </p>
+    <p>Average credit amount : {credit} </p>
+    """.format(total_balancer= total_balancer,paragraph = paragraph, debit=debit, credit=credit)
+
+    # BODY_TEXT = """
+    # These company: {companies_names} were inserted, to the Table = company_records_fra, please check
+    # on the database is the record is not repeated
+    # """
+
+    # Create a new SES resource and specify a region.
+    client = boto3.client('ses',region_name=AWS_REGION)
+
+    try:
+        for each_email in emails:
+            response = client.send_email(
+                                Destination={
+                                    'ToAddresses': [
+                                        each_email,
+                                    ],
+                                },
+                                Message={
+                                    'Body': {
+                                        'Html': {
+                                            'Charset': CHARSET,
+                                            'Data': BODY_HTML,
+                                        },
+                                        # 'Text': {
+                                        #     'Charset': CHARSET,
+                                        #     'Data': BODY_TEXT,
+                                        # },
+                                    },
+                                    'Subject': {
+                                        'Charset': CHARSET,
+                                        'Data': SUBJECT,
+                                    },
+                                },
+                                Source=SENDER,
+                            )
+    except Exception as error:
+        logger.error("Errors were found in sending the notification, the deails are: {}.".format(error) )
+        return False
+    else:
+        logger.warning("The notifications were sent!")
+        return True
+            
     
