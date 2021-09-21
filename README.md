@@ -1,10 +1,10 @@
 <!--
-title: 'AWS Python Example'
-description: 'This template demonstrates how to deploy a Python function running on AWS Lambda using the traditional Serverless Framework.'
+title: 'Stori test'
+description: ' This is a simple test for process data in csv and send a notification by email'
 layout: Doc
 framework: v2
 platform: AWS
-language: python
+language: python 3.7
 priority: 2
 authorLink: 'https://github.com/serverless'
 authorName: 'Serverless, inc.'
@@ -12,89 +12,50 @@ authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
 -->
 
 
-# Serverless Framework AWS Python Example
+# Test architecture
+This test is conformed by the services of S3,Lambdas,SES, personally i use CodePipeline to deploy my code using CodeBuild and serverless framework, also i used SQL SERVER to store the data, and DynamoDB as storage layer persistent data for use idempotency
 
-This template demonstrates how to deploy a Python function running on AWS Lambda using the traditional Serverless Framework. The deployed function does not include any event definitions as well as any kind of persistence (database). For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about configuration of specific `events`, please refer to our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).
+# The process of the Test
 
-## Usage
+The process is executed by inserting a csv file to S3 and it is obtained through a lambda called invokeS3, in that lambda I process the basic data of the csv, to mold a payload in my favor, after processing it I invoke another lambda called idempotency, which as its name indicates is based on that concept, that if for a certain time the event that arrives does not change, the lambda will not be executed unless it changes, for this I use a library called aws_lambda_powertools that was very useful, together with DynamoDB, they create a storage layer persistent, if the payload was accepted, it will send an email with the user's account status
 
-### Deployment
 
-In order to deploy the example, you need to run the following command:
+# The csv file
+The name of the csv is = {name_user}_{last_name}.csv for example adolfo_diaz.csv, if you create your own csv it will create a new user on de database, with the names that you assigned to the csv
 
-```
-$ serverless deploy
-```
 
-After running deploy, you should see output similar to:
 
-```bash
-Serverless: Packaging service...
-Serverless: Excluding development dependencies...
-Serverless: Creating Stack...
-Serverless: Checking Stack create progress...
-........
-Serverless: Stack create finished...
-Serverless: Uploading CloudFormation file to S3...
-Serverless: Uploading artifacts...
-Serverless: Uploading service aws-python.zip file to S3 (711.23 KB)...
-Serverless: Validating template...
-Serverless: Updating Stack...
-Serverless: Checking Stack update progress...
-.................................
-Serverless: Stack update finished...
-Service Information
-service: aws-python
-stage: dev
-region: us-east-1
-stack: aws-python-dev
-resources: 6
-functions:
-  api: aws-python-dev-hello
-layers:
-  None
-```
+# Local prove
 
-### Invocation
+I will give you my AWS account for prove my lambda and see the services, also to do local tests with serverless
 
-After successful deployment, you can invoke the deployed function by using the following command:
+-For local test you need to:
+1.- Create a virtual enviroment with python
+2.- Install serverless
+3.- config the aws account with serverless
+4.- cd lmds : for execute lambdas
+5.- serverless invoke local --function   stori -s dev --aws-profile adolfoAWS 
 
-```bash
-serverless invoke --function hello
-```
+6.-In the transactions directory you will see a exaple of a csv.
 
-Which should result in response similar to the following:
 
-```json
-{
-    "statusCode": 200,
-    "body": "{\"message\": \"Go Serverless v2.0! Your function executed successfully!\", \"input\": {}}"
-}
-```
+CONSOLE LINK = https://075313463539.signin.aws.amazon.com/console
 
-### Local development
+User name =  AdolfoAdmin
 
-You can invoke your function locally by using the following command:
+Password = Poropo1994.
 
-```bash
-serverless invoke local --function hello
-```
+AccessKeyId = AKIARDCIIIDZ5PAEAFUA
+SecretAccess = 3lF957V4JcR2J6E4ixB7XqB6g3HglK/NqwnK9uHa
 
-Which should result in response similar to the following:
 
-```
-{
-    "statusCode": 200,
-    "body": "{\"message\": \"Go Serverless v2.0! Your function executed successfully!\", \"input\": {}}"
-}
-```
+# Notes
 
-### Bundling dependencies
+Right know the email is static, and only i will receive the email, we can update the ses in the review of the test
 
-In case you would like to include third-party dependencies, you will need to use a plugin called `serverless-python-requirements`. You can set it up by running the following command:
 
-```bash
-serverless plugin install -n serverless-python-requirements
-```
 
-Running the above will automatically add `serverless-python-requirements` to `plugins` section in your `serverless.yml` file and add it as a `devDependency` to `package.json` file. The `package.json` file will be automatically created if it doesn't exist beforehand. Now you will be able to add your dependencies to `requirements.txt` file (`Pipfile` and `pyproject.toml` is also supported but requires additional configuration) and they will be automatically injected to Lambda package during build process. For more details about the plugin's configuration, please refer to [official documentation](https://github.com/UnitedIncome/serverless-python-requirements).
+
+
+
+
