@@ -38,17 +38,6 @@ I will give you my AWS account for prove my lambda and see the services, also to
 
 6.-In the transactions directory you will see a exaple of a csv.
 
-
-CONSOLE LINK = https://075313463539.signin.aws.amazon.com/console
-
-User name =  AdolfoAdmin
-
-Password = Poropo1994.
-
-AccessKeyId = AKIARDCIIIDZ5PAEAFUA
-SecretAccess = 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
-
-
 # Notes
 
 Right know the email is static, and only i will receive the email, we can update the ses in the review of the test
